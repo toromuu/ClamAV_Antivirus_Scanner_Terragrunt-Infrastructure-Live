@@ -4,13 +4,11 @@
 # maintainable: https://github.com/gruntwork-io/terragrunt
 # ---------------------------------------------------------------------------------------------------------------------
 
-# We override the terraform block source attribute here just for the QA environment to show how you would deploy a
-# different version of the module in a specific environment.
-# Create a new ECR repository for the Lambda function code
 terraform {
-  source = "terraform-aws-modules/ecr/aws"
-  version = "1.6.0"
+  source = "terraform-aws-modules/s3-bucket/aws"
+  version = "2.12.0"
 }
+
 
 # ---------------------------------------------------------------------------------------------------------------------
 # Include configurations that are common used across multiple environments.
@@ -39,32 +37,15 @@ locals {
   aws_region   = local.region_vars.locals.aws_region
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# We don't need to override any of the common parameters for this environment, so we don't specify any inputs.
-# ---------------------------------------------------------------------------------------------------------------------
 
+# Set the bucket name and other configuration options
 inputs = {
-  name              =  local.environment_vars.locals.ecr_repository_name
-  //repository_type = "public" by default private
-
-  # Add the lifecycle policy
-  enable_lifecycle_policy = true
-  repository_lifecycle_policy = jsonencode({
-    rules = [
-      {
-        rule_priority = 1,
-        selection = {
-          count_type = "imageCountMoreThan"
-          count_number = 1
-          tag_status = "untagged"
-        },
-        action = {
-          type = "expire"
-        }
-      }
-    ]
-  })
-
-  tags = local.environment_vars.locals.tags 
-
+  bucket_name = "my-bucket"
+  acl = "private"
+  versioning_enabled = true
+  bucket_name = "my-example-bucket"
+  create_notification = true
+  notification_lambda_function_arn = "arn:aws:lambda:us-east-1:123456789012:function:my-example-function"
+  create_lifecycle_configuration = true
+  lifecycle_expiration_days = 7
 }

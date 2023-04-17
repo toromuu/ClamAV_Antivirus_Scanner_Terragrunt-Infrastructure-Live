@@ -16,15 +16,35 @@ terraform {
 
 # Include the root `terragrunt.hcl` configuration. The root configuration contains settings that are common across all
 # components and environments, such as how to configure remote state.
-include "root" {
+include {
   path = find_in_parent_folders()
 }
 
-# Include the envcommon configuration for the component. The envcommon configuration contains settings that are common
-# for the component across all environments.
-include "envcommon" {
-  path   = "${dirname(find_in_parent_folders())}/_envcommon/mysql.hcl"
-  expose = true
+# Include the necessary variables
+locals {
+  # Automatically load account-level variables
+  account_vars = read_terragrunt_config(find_in_parent_folders("account.hcl"))
+
+  # Automatically load region-level variables
+  region_vars = read_terragrunt_config(find_in_parent_folders("region.hcl"))
+
+  # Automatically load environment-level variables
+  environment_vars = read_terragrunt_config(find_in_parent_folders("env.hcl"))
+
+  # Extract the variables we need for easy access
+  account_name = local.account_vars.locals.account_name
+  account_id   = local.account_vars.locals.aws_account_id
+  aws_region   = local.region_vars.locals.aws_region
+}
+
+dependency "lambda_antivirus_scanner" {
+  config_path = "../Lambda"
+
+  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["validate", "plan", "destroy"]
+  mock_outputs = {
+    arn = "lambda-arn-123"
+  }
 }
 
 
@@ -34,17 +54,14 @@ include "envcommon" {
 
 # Set the bucket name and other configuration options
 inputs = {
+
   bucket_name = "my-bucket"
   acl = "private"
   versioning_enabled = true
+  bucket_name = "my-example-bucket"
+  create_notification = true
+  notification_lambda_function_arn = "arn:aws:lambda:us-east-1:123456789012:function:my-example-function"
+  create_lifecycle_configuration = true
+  lifecycle_expiration_days = 7
 
-  # Set the bucket notification configuration to trigger the Lambda function
-  bucket_notification_lambda_function_configurations = [
-    {
-      lambda_function_arn = "${find_in_parent_folders("lambda_function/arn")}"
-      events              = ["s3:ObjectCreated:*"]
-      filter_prefix       = ""
-      filter_suffix       = ""
-    }
-  ]
 }
