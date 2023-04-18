@@ -62,10 +62,11 @@ locals {
 inputs = {
   
   repository_name =  local.environment_vars.locals.ecr_repository_name
-  repository_type = "private"
+  repository_type = "private" 
   # Add the lifecycle policy
   enable_lifecycle_policy = true
   repository_lifecycle_policy = local.expireUntagged
+  repository_image_tag_mutability = "MUTABLE"
   tags = local.environment_vars.locals.tags 
 
 }
