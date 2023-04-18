@@ -3,18 +3,7 @@ variable "role_name" {
   type        = string
 }
 
-# variable "production_bucket_name" {
-#   description = "The name of the S3 bucket."
-#   type        = string
-# }
-
-# variable "quarantine_bucket_name" {
-#   description = "The name of the S3 bucket."
-#   type        = string
-# }
-
-# variable "ecr_repository_name" {
-#   description = "The name of the ECR repository."
-#   type        = string
-# }
-
+variable "tags" {
+  type    = map(string)
+  default = {}
+}

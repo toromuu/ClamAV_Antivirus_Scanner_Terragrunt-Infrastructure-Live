@@ -5,8 +5,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 terraform {
-  source = "terraform-aws-modules/s3-bucket/aws"
-  version = "2.12.0"
+  source = "../../../../..//modules/s3_with_notifications"
 }
 
 
@@ -37,16 +36,15 @@ locals {
   aws_region   = local.region_vars.locals.aws_region
 }
 
-dependency "lambda_antivirus_scanner" {
-  config_path = "../Lambda"
+dependency "lambda_scanner" {
+  config_path = "../../Lambda"
 
   mock_outputs_merge_strategy_with_state  = "shallow"
   mock_outputs_allowed_terraform_commands = ["validate", "plan", "destroy"]
   mock_outputs = {
-    arn = "lambda-arn-123"
+    lambda_function_arn = "lambda-arn-2123"
   }
 }
-
 
 # ---------------------------------------------------------------------------------------------------------------------
 # We don't need to override any of the common parameters for this environment, so we don't specify any inputs.
@@ -55,13 +53,16 @@ dependency "lambda_antivirus_scanner" {
 # Set the bucket name and other configuration options
 inputs = {
 
-  bucket_name = "my-bucket"
+  bucket_name = local.environment_vars.locals.s3_quarantine_bucket_name
   acl = "private"
   versioning_enabled = true
-  bucket_name = "my-example-bucket"
   create_notification = true
-  notification_lambda_function_arn = "arn:aws:lambda:us-east-1:123456789012:function:my-example-function"
+  //notification_lambda_function_arn = "arn:aws:lambda:${local.aws_region}:${local.account_id}:function:${local.environment_vars.locals.lambda_antivirus_scanner_name}"
+  notification_lambda_function_name = local.environment_vars.locals.lambda_antivirus_scanner_name
+  notification_lambda_function_arn = dependency.lambda_scanner.outputs.lambda_function_arn
   create_lifecycle_configuration = true
   lifecycle_expiration_days = 7
+  tags = local.environment_vars.locals.tags
+
 
 }

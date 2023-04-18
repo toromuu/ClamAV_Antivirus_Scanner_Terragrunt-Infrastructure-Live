@@ -5,8 +5,7 @@
 # ---------------------------------------------------------------------------------------------------------------------
 
 terraform {
-  source = "terraform-aws-modules/s3-bucket/aws"
-  version = "2.12.0"
+  source = "../../../../..//modules/s3_with_notifications"
 }
 
 
@@ -40,12 +39,10 @@ locals {
 
 # Set the bucket name and other configuration options
 inputs = {
-  bucket_name = "my-bucket"
+  bucket_name = local.environment_vars.locals.s3_production_bucket_name
   acl = "private"
   versioning_enabled = true
-  bucket_name = "my-example-bucket"
-  create_notification = true
-  notification_lambda_function_arn = "arn:aws:lambda:us-east-1:123456789012:function:my-example-function"
-  create_lifecycle_configuration = true
-  lifecycle_expiration_days = 7
+  create_notification = false
+  create_lifecycle_configuration = false
+  tags = local.environment_vars.locals.tags
 }

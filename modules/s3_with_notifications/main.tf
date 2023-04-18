@@ -1,5 +1,16 @@
 resource "aws_s3_bucket" "bucket" {
-  bucket = var.bucket_name  
+  bucket = var.bucket_name
+  tags = var.tags  
+}
+
+resource "aws_lambda_permission" "allow_s3_invoke_lambda" {
+  count   = var.create_notification ? 1 : 0
+  statement_id  = "AllowS3InvokeLambda"
+  action        = "lambda:InvokeFunction"
+  function_name = var.notification_lambda_function_name
+  principal     = "s3.amazonaws.com"
+  
+  source_arn = aws_s3_bucket.bucket.arn
 }
 
 resource "aws_s3_bucket_notification" "bucket_notification" {
@@ -13,37 +24,25 @@ resource "aws_s3_bucket_notification" "bucket_notification" {
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "encryption" {
-  bucket = aws_s3_bucket.mybucket.id
+  bucket = aws_s3_bucket.bucket.id
 
   rule {
     apply_server_side_encryption_by_default {
-      kms_master_key_id = aws_kms_key.mykey.arn
-      sse_algorithm     = "aws:kms"
+      sse_algorithm     = "AES256"
     }
   }
 }
 
 resource "aws_s3_bucket_acl" "acl" {
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.bucket.id
   acl    = var.bucket_acl
 }
 
 
 resource "aws_s3_bucket_versioning" "versioning" {
-  bucket = aws_s3_bucket.example.id
+  bucket = aws_s3_bucket.bucket.id
   versioning_configuration {
     status = "Enabled"
-  }
-}
-
-resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle_configuration" {
-  rule {
-    id      = "delete-objects-after-1-week"
-    status  = "Enabled"
-
-    expiration {
-      days = 7
-    }
   }
 }
 

@@ -7,8 +7,7 @@
 # We override the terraform block source attribute here just for the QA environment to show how you would deploy a
 # different version of the module in a specific environment.
 terraform {
-   source  = "terraform-aws-modules/lambda/aws"
-   version = "4.14.0"
+   source = "tfr:///terraform-aws-modules/lambda/aws//.?version=4.14.0"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -38,26 +37,6 @@ locals {
   aws_region   = local.region_vars.locals.aws_region
 }
 
-dependency "s3_production_bucket" {
-  config_path = "../S3/Production"
-
-  mock_outputs_merge_strategy_with_state  = "shallow"
-  mock_outputs_allowed_terraform_commands = ["validate", "plan", "destroy"]
-  mock_outputs = {
-    s3_bucket_arn = "bucket-arn-123"
-  }
-}
-
-dependency "s3_quarantine_bucket" {
-  config_path = "../S3/Quarantine"
-
-  mock_outputs_merge_strategy_with_state  = "shallow"
-  mock_outputs_allowed_terraform_commands = ["validate", "plan", "destroy"]
-  mock_outputs = {
-    s3_bucket_arn = "bucket-arn-123"
-  }
-}
-
 dependency "ecr_repository" {
   config_path = "../ECR"
 
@@ -84,31 +63,34 @@ dependency "lambda_role" {
 # ---------------------------------------------------------------------------------------------------------------------
 # Set the function name, handler, and runtime
 inputs = {
-  function_name = "ClamAV_Antivirus_Scanner"
+  function_name = local.environment_vars.locals.lambda_antivirus_scanner_name
   //handler = "index.handler"
   package_type = "Image"
   runtime = "nodejs16.x"
   timeout          = 900
-  memory_size      = 8096
+  memory_size      = 3008
   ephemeral_storage_size = 8096
   cloudwatch_logs_retention_in_days = 90
+  create_package = false
+  create_role = false
 
   # Set the function code and dependencies
-  image_uri = "${local.account_number}.dkr.ecr.${local.aws_region}.amazonaws.com/ClamAV_Antivirus_Scanner:latest"
+  image_uri = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/${local.environment_vars.locals.ecr_repository_name}:latest"
 
   # Set the environment variables for ClamAV and the quarantine bucket
   environment_variables = {
-    S3_PRODUCTION_BUCKET = dependency.s3_bucket_quarantine.outputs.bucket
+    S3_PRODUCTION_BUCKET = local.environment_vars.locals.s3_production_bucket_name
   }
 
-  allowed_triggers = {
-    S3_BUCKET = {
-      service    = "s3"
-      source_arn = dependency.s3_quarantine_bucket.outputs.s3_bucket_arn,
-    }
-  }
+  #  allowed_triggers = {
+  #    S3_BUCKET = {
+  #      service    = "s3"
+  #      source_arn = dependency.s3_quarantine_bucket.outputs.bucket_arn
+  #    }
+  #  }
 
   # Set the IAM role for the function to allow it to access S3 and write to the production bucket
   lambda_role = dependency.lambda_role.outputs.iam_role_arn
+  tags = local.environment_vars.locals.tags
 }
 

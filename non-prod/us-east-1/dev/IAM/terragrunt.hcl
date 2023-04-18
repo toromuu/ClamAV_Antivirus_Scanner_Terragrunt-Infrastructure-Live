@@ -7,7 +7,7 @@
 # We override the terraform block source attribute here just for the QA environment to show how you would deploy a
 # different version of the module in a specific environment.
 terraform {
-  source = "../../../../modules/iam_lambda_role"
+  source = "../../../..//modules/iam_lambda_role"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------

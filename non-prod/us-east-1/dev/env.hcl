@@ -3,5 +3,8 @@
 locals {
   environment = "dev"
   tags        = { "Solution" : "S3_Antivirus_Scanner" }
-  ecr_repository_name = "ClamAV_Antivirus_Scanner_Repository"
+  ecr_repository_name = "clamav_antivirus_scanner_repository"
+  lambda_antivirus_scanner_name = "clamav_antivirus_scanner_lambda"
+  s3_production_bucket_name = "production-clamav-antivirus-scanner-test"
+  s3_quarantine_bucket_name = "quarantine-clamav-antivirus-scanner-test"
 }
