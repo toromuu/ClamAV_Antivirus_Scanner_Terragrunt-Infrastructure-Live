@@ -53,16 +53,16 @@ dependency "lambda_scanner" {
 # Set the bucket name and other configuration options
 inputs = {
 
-  bucket_name = local.environment_vars.locals.s3_quarantine_bucket_name
-  acl = "private"
-  versioning_enabled = true
+  bucket_name         = local.environment_vars.locals.s3_quarantine_bucket_name
+  acl                 = "private"
+  versioning_enabled  = true
   create_notification = true
   //notification_lambda_function_arn = "arn:aws:lambda:${local.aws_region}:${local.account_id}:function:${local.environment_vars.locals.lambda_antivirus_scanner_name}"
   notification_lambda_function_name = local.environment_vars.locals.lambda_antivirus_scanner_name
-  notification_lambda_function_arn = dependency.lambda_scanner.outputs.lambda_function_arn
-  create_lifecycle_configuration = true
-  lifecycle_expiration_days = 7
-  tags = local.environment_vars.locals.tags
+  notification_lambda_function_arn  = dependency.lambda_scanner.outputs.lambda_function_arn
+  create_lifecycle_configuration    = true
+  lifecycle_expiration_days         = 7
+  tags                              = local.environment_vars.locals.tags
 
 
 }

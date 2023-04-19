@@ -39,10 +39,10 @@ locals {
 
 # Set the bucket name and other configuration options
 inputs = {
-  bucket_name = local.environment_vars.locals.s3_production_bucket_name
-  acl = "private"
-  versioning_enabled = true
-  create_notification = false
+  bucket_name                    = local.environment_vars.locals.s3_production_bucket_name
+  acl                            = "private"
+  versioning_enabled             = true
+  create_notification            = false
   create_lifecycle_configuration = false
-  tags = local.environment_vars.locals.tags
+  tags                           = local.environment_vars.locals.tags
 }

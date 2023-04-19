@@ -4,5 +4,5 @@ output "iam_role_name" {
 }
 
 output "iam_role_arn" {
-    value       = try(aws_iam_role.lambda_execution_role.arn, "")
+  value = try(aws_iam_role.lambda_execution_role.arn, "")
 }

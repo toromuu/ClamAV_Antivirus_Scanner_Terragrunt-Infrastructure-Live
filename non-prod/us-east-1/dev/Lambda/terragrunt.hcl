@@ -7,7 +7,7 @@
 # We override the terraform block source attribute here just for the QA environment to show how you would deploy a
 # different version of the module in a specific environment.
 terraform {
-   source = "tfr:///terraform-aws-modules/lambda/aws//.?version=4.14.0"
+  source = "tfr:///terraform-aws-modules/lambda/aws//.?version=4.14.0"
 }
 
 # ---------------------------------------------------------------------------------------------------------------------
@@ -74,14 +74,14 @@ dependency "sns" {
 inputs = {
   function_name = local.environment_vars.locals.lambda_antivirus_scanner_name
   //handler = "index.handler"
-  package_type = "Image"
-  runtime = "nodejs16.x"
-  timeout          = 900
-  memory_size      = 3008
-  ephemeral_storage_size = 8096
+  package_type                      = "Image"
+  runtime                           = "nodejs16.x"
+  timeout                           = 900
+  memory_size                       = 3008
+  ephemeral_storage_size            = 8096
   cloudwatch_logs_retention_in_days = 90
-  create_package = false
-  create_role = false
+  create_package                    = false
+  create_role                       = false
 
   # Set the function code and dependencies
   image_uri = "${local.account_id}.dkr.ecr.${local.aws_region}.amazonaws.com/${local.environment_vars.locals.ecr_repository_name}:latest"
@@ -89,7 +89,7 @@ inputs = {
   # Set the environment variables for ClamAV and the quarantine bucket
   environment_variables = {
     S3_PRODUCTION_BUCKET = local.environment_vars.locals.s3_production_bucket_name
-    SNS_ARN_TOPIC = dependency.sns.outputs.sns_topic_arn
+    SNS_ARN_TOPIC        = dependency.sns.outputs.sns_topic_arn
   }
 
   #  allowed_triggers = {
@@ -101,6 +101,6 @@ inputs = {
 
   # Set the IAM role for the function to allow it to access S3 and write to the production bucket
   lambda_role = dependency.lambda_role.outputs.iam_role_arn
-  tags = local.environment_vars.locals.tags
+  tags        = local.environment_vars.locals.tags
 }
 

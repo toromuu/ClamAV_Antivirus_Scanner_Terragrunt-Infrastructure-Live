@@ -42,5 +42,5 @@ locals {
 # Set the bucket name and other configuration options
 inputs = {
   email_addresses = local.environment_vars.locals.admins_pdl
-  sns_topic_name = local.environment_vars.locals.sns_topic_name
+  sns_topic_name  = local.environment_vars.locals.sns_topic_name
 }

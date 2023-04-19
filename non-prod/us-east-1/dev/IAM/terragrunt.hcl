@@ -44,8 +44,8 @@ locals {
 # Set the function name, handler, and runtime
 
 inputs = {
-  role_name        = "S3_ECR_Lambda_permission"
-  tags = local.environment_vars.locals.tags
+  role_name = "S3_ECR_Lambda_permission"
+  tags      = local.environment_vars.locals.tags
 }
 
 

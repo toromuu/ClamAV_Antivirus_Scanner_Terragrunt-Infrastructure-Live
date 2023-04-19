@@ -4,8 +4,6 @@
 # maintainable: https://github.com/gruntwork-io/terragrunt
 # ---------------------------------------------------------------------------------------------------------------------
 
-# We override the terraform block source attribute here just for the QA environment to show how you would deploy a
-# different version of the module in a specific environment.
 # Create a new ECR repository for the Lambda function code
 terraform {
   source = "tfr:///terraform-aws-modules/ecr/aws//.?version=1.6.0"
@@ -37,6 +35,8 @@ locals {
   account_name = local.account_vars.locals.account_name
   account_id   = local.account_vars.locals.aws_account_id
   aws_region   = local.region_vars.locals.aws_region
+
+  # This policy avoid to have 
   expireUntagged = jsonencode({
     rules = [
       {
@@ -55,18 +55,15 @@ locals {
   })
 }
 
-# ---------------------------------------------------------------------------------------------------------------------
-# We don't need to override any of the common parameters for this environment, so we don't specify any inputs.
-# ---------------------------------------------------------------------------------------------------------------------
 
 inputs = {
-  
-  repository_name =  local.environment_vars.locals.ecr_repository_name
-  repository_type = "private" 
+
+  repository_name = local.environment_vars.locals.ecr_repository_name
+  repository_type = "private"
   # Add the lifecycle policy
-  enable_lifecycle_policy = true
-  repository_lifecycle_policy = local.expireUntagged
+  enable_lifecycle_policy         = true
+  repository_lifecycle_policy     = local.expireUntagged
   repository_image_tag_mutability = "MUTABLE"
-  tags = local.environment_vars.locals.tags 
+  tags                            = local.environment_vars.locals.tags
 
 }
