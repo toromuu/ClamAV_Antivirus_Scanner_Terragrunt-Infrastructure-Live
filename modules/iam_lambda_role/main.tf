@@ -21,19 +21,19 @@ resource "aws_iam_role" "lambda_execution_role" {
 #   role = var.role_name
 # }
 
-resource "aws_iam_role_policy_attachment" "ecr_full_access" {
-  policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
-  role = var.role_name
-}
+# resource "aws_iam_role_policy_attachment" "ecr_full_access" {
+#   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryFullAccess"
+#   role = var.role_name
+# }
 
 resource "aws_iam_role_policy_attachment" "lambda_basic" {
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
   role = var.role_name
 }
 
-resource "aws_iam_policy" "s3_access_policy" {
-  name        = "s3_access_policy"
-  description = "Allows access to S3 buckets"
+resource "aws_iam_policy" "access_policy" {
+  name        = "access_policy"
+  description = "Allows access to S3 buckets, ecr, sns"
   policy      = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -42,7 +42,8 @@ resource "aws_iam_policy" "s3_access_policy" {
         Action   = [
           "s3:*",
           "ecr:*",
-          "lambda:*"
+          "lambda:*",
+          "sns:*"
         ]
         Resource = [
          "*",
@@ -57,6 +58,6 @@ resource "aws_iam_policy" "s3_access_policy" {
 # //arn:aws:s3:::quarantine-clamav-antivirus-scanner-test
 
 resource "aws_iam_role_policy_attachment" "s3_access" {
-  policy_arn = aws_iam_policy.s3_access_policy.arn
+  policy_arn = aws_iam_policy.access_policy.arn
   role       = aws_iam_role.lambda_execution_role.name
 }

@@ -57,6 +57,15 @@ dependency "lambda_role" {
   }
 }
 
+dependency "sns" {
+  config_path = "../SNS"
+
+  mock_outputs_merge_strategy_with_state  = "shallow"
+  mock_outputs_allowed_terraform_commands = ["validate", "plan", "destroy"]
+  mock_outputs = {
+    sns_topic_arn = "arn-topic-2123"
+  }
+}
 
 # ---------------------------------------------------------------------------------------------------------------------
 # We don't need to override any of the common parameters for this environment, so we don't specify any inputs.
@@ -80,6 +89,7 @@ inputs = {
   # Set the environment variables for ClamAV and the quarantine bucket
   environment_variables = {
     S3_PRODUCTION_BUCKET = local.environment_vars.locals.s3_production_bucket_name
+    SNS_ARN_TOPIC = dependency.sns.outputs.sns_topic_arn
   }
 
   #  allowed_triggers = {
