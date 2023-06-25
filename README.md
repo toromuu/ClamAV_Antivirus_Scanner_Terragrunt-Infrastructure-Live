@@ -1,4 +1,4 @@
-# ClamAV_Antivirus_Scanner_Terragrunt-Infrastructure-Live
+# Serverless_Malware_Scanner_Terragrunt-Infrastructure-Live
 
 This repository contains Terraform and Terragrunt Infraestructure as code to create the resources for the S3 scanner malware architecture in AWS Cloud. 
 
