@@ -46,6 +46,7 @@ resource "aws_iam_policy" "access_policy" {
           "s3:GetObject",
           "s3:PutObjectTagging",
           "s3:PutObject",
+          "s3:Delete*",
           "s3:ListBucket",
           "s3:GetBucketLocation"
         ]
