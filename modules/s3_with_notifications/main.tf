@@ -51,7 +51,7 @@ resource "aws_s3_bucket_versioning" "versioning" {
   }
 }
 
-# The objects that remains in the quarantine bucket will be delete it
+# The objects that remain in the quarantine bucket will be deleted
 resource "aws_s3_bucket_lifecycle_configuration" "bucket_lifecycle_configuration" {
   count = var.create_lifecycle_configuration ? 1 : 0
 
