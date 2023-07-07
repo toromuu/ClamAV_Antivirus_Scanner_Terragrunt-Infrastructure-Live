@@ -36,7 +36,8 @@ locals {
   account_id   = local.account_vars.locals.aws_account_id
   aws_region   = local.region_vars.locals.aws_region
 
-  # This policy avoid to have 
+  # This policy avoid to have more 
+  # than 2 images at the same time
   expireUntagged = jsonencode({
     rules = [
       {
